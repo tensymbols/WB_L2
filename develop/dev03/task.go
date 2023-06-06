@@ -1,5 +1,14 @@
 package main
 
+import (
+	"flag"
+	"io"
+	"log"
+	"os"
+	"sort"
+	"strings"
+)
+
 /*
 === Утилита sort ===
 
@@ -26,5 +35,34 @@ package main
 */
 
 func main() {
+	var k int        // column index
+	var n, r, u bool // by numeric value, reverse order, no duplicates
+	var file *os.File
+	flag.IntVar(&k, "k", 0, "column index")
+	flag.BoolVar(&n, "n", false, "sort by numeric value")
+	flag.BoolVar(&r, "r", false, "sort in reverse order")
+	flag.BoolVar(&u, "u", false, "do not print duplicates")
+	flag.Parse()
+	if fName := flag.Arg(0); fName != "" {
+		var err error
+		file, err = os.Open(fName)
+		defer file.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		log.Fatal("filename is empty")
+	}
+	data, err := io.ReadAll(file)
 
+	if err != nil {
+		log.Fatal("could not read file contents")
+	}
+	var words [][]string
+	for _, v := range strings.Split(string(data), "\n") {
+		words = append(words, strings.Fields(v))
+	}
+	sort.Slice(words, func(i, j int) bool {
+		return words[i][k] < words[i][k]
+	})
 }
